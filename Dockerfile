@@ -32,6 +32,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy backend source
 COPY web_api.py .
 COPY src ./src
+COPY config ./config
 
 # Copy built frontend from previous stage
 COPY --from=frontend-builder /app/build ./web/build
