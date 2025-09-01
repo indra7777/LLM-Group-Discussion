@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: llm-group-discussion-backend
+    env: python
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "python web_api.py"
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: DEBUG
+        value: false
+    autoDeploy: true
+    
+  - type: static
+    name: llm-group-discussion-frontend
+    buildCommand: "npm install && npm run build"
+    staticPublishPath: ./build
+    envVars:
+      - key: REACT_APP_API_URL
+        value: https://llm-group-discussion-backend.onrender.com
