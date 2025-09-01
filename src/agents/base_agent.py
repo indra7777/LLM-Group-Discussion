@@ -8,10 +8,12 @@ try:
 except ImportError:
     print("Warning: python-dotenv not installed. Using environment variables directly.")
 
+OpenAIModel = None
+
 try:
     # Try new autogen structure first  
     from autogen_agentchat.agents import AssistantAgent
-    from autogen_ext.models.openai import OpenAIChatCompletionClient
+    from autogen_ext.models.openai import OpenAIChatCompletionClient as OpenAIModel
     AUTOGEN_NEW = True
     ConversableAgent = AssistantAgent
 except ImportError:
@@ -71,7 +73,7 @@ class BaseDiscussionAgent:
             return None
             
         try:
-            if AUTOGEN_NEW:
+            if AUTOGEN_NEW and OpenAIModel is not None:
                 # New autogen structure
                 model = OpenAIModel(
                     model=self.model_config["model"],

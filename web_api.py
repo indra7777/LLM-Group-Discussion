@@ -95,23 +95,28 @@ async def startup_event():
 @app.get("/")
 async def read_root():
     """Serve the main web application."""
-    return HTMLResponse("""
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <title>LLM Group Discussion</title>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    </head>
-    <body>
-        <div id="root">Loading...</div>
-        <script>
-            // Simple redirect to static files when they're ready
-            window.location.href = '/static/index.html';
-        </script>
-    </body>
-    </html>
-    """)
+    if os.path.exists("web/build/index.html"):
+        from fastapi.responses import FileResponse
+        return FileResponse("web/build/index.html")
+    else:
+        return HTMLResponse("""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>LLM Group Discussion</title>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        </head>
+        <body>
+            <div id="root">
+                <h1>LLM Group Discussion API</h1>
+                <p>Frontend not built yet. Build the frontend first:</p>
+                <pre>cd web && npm run build</pre>
+                <p>API endpoints are available at /api/</p>
+            </div>
+        </body>
+        </html>
+        """)
 
 @app.get("/api/health")
 async def health_check():
@@ -354,7 +359,13 @@ async def websocket_endpoint(websocket: WebSocket):
 
 # Mount static files (for the React frontend when it's built)
 if os.path.exists("web/build"):
-    app.mount("/static", StaticFiles(directory="web/build", html=True), name="static")
+    app.mount("/static", StaticFiles(directory="web/build/static"), name="static")
+    # Also serve the main index.html
+    from fastapi.responses import FileResponse
+    
+    @app.get("/static/index.html")
+    async def serve_index():
+        return FileResponse("web/build/index.html")
 
 if __name__ == "__main__":
     import uvicorn
