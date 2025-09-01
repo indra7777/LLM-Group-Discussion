@@ -1,16 +1,25 @@
 services:
   - type: web
     name: llm-group-discussion
-    env: python
-    buildCommand: "pip install -r requirements.txt && cd web && npm install && npm run build && cd .."
-    startCommand: "python web_api.py"
+    env: docker
+    dockerfilePath: ./Dockerfile
     envVars:
       - key: PORT
         value: 10000
-      - key: PYTHON_VERSION
-        value: 3.11.0
       - key: DEBUG
         value: false
-      - key: NODE_VERSION
-        value: 18
+      - key: GOOGLE_AI_STUDIO_KEY_1
+        value: AIzaSyDUv2im2FXgLC3E76pwwH0HJwqRTLqKcyQ
+      - key: GOOGLE_AI_STUDIO_KEY_2
+        value: AIzaSyCDX6WEYYsTi_-jpaaCiOU80QpD_rGHrMs
+      - key: GOOGLE_AI_STUDIO_KEY_3
+        value: AIzaSyCHZEdYnlM59qpkPaG3D4QJVvovoLMmB9U
+      - key: GOOGLE_AI_STUDIO_KEY_4
+        value: AIzaSyAPwC4SboIIPJo-5zDI2M7tixtOj5wzBok
+      - key: GOOGLE_AI_STUDIO_PRO_KEY
+        value: AIzaSyCw8S_2LGAWHNWK97dsUosb4bnsx2y82PU
+      - key: GOOGLE_SEARCH_API_KEY
+        value: AIzaSyDmGKs4gbdefNTGRGi5bak0CC6r-4AiLGM
+      - key: GOOGLE_CSE_ID
+        value: 9535a129bb77746a5
     autoDeploy: true

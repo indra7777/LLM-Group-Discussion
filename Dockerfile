@@ -4,13 +4,13 @@ FROM node:18-slim as frontend-builder
 WORKDIR /app
 
 # Copy frontend package files
-COPY package*.json ./
+COPY web/package*.json ./
 RUN npm ci --only=production
 
 # Copy frontend source
-COPY src ./src
-COPY public ./public
-COPY *.css *.js *.json *.html ./
+COPY web/src ./src
+COPY web/public ./public
+COPY web/*.css web/*.js web/*.json web/*.html ./
 
 # Build frontend
 RUN npm run build
@@ -32,17 +32,16 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy backend source
 COPY web_api.py .
 COPY src ./src
-COPY config ./config
 
 # Copy built frontend from previous stage
-COPY --from=frontend-builder /app/build ./static
+COPY --from=frontend-builder /app/build ./web/build
 
 # Expose port
-EXPOSE 8000
+EXPOSE 10000
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-  CMD curl -f http://localhost:8000/api/health || exit 1
+  CMD python -c "import requests; requests.get('http://localhost:10000/api/health')" || exit 1
 
 # Start the application
 CMD ["python", "web_api.py"]
