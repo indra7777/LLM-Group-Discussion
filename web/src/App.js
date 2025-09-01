@@ -22,13 +22,29 @@ const App = () => {
   const [streamingMessages, setStreamingMessages] = useState({}); // id -> { speaker, content, type, timestamp }
 
   // Initialize WebSocket connection
+  // Get API base URL
+  const getApiBaseUrl = () => {
+    if (process.env.REACT_APP_API_URL) {
+      return process.env.REACT_APP_API_URL;
+    }
+    // In production, use the same host as the frontend
+    if (window.location.hostname !== 'localhost') {
+      return `${window.location.protocol}//${window.location.host}`;
+    }
+    // In development, use localhost:8000
+    return 'http://localhost:8000';
+  };
+
+  const apiBaseUrl = getApiBaseUrl();
+
   useEffect(() => {
     let ws = null;
     let reconnectTimeout = null;
 
     const connectWebSocket = () => {
       const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-      const wsUrl = `${wsProtocol}//localhost:8000/ws`;
+      const wsHost = window.location.hostname !== 'localhost' ? window.location.host : 'localhost:8000';
+      const wsUrl = `${wsProtocol}//${wsHost}/ws`;
       
       ws = new WebSocket(wsUrl);
       
@@ -150,7 +166,7 @@ const App = () => {
 
   const startDiscussion = async (topic, goal = 'explore') => {
     try {
-      const response = await fetch('http://localhost:8000/api/discussion/start', {
+      const response = await fetch(`${apiBaseUrl}/api/discussion/start`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -174,7 +190,7 @@ const App = () => {
 
   const generateNextRound = async () => {
     try {
-      const response = await fetch('http://localhost:8000/api/discussion/next', {
+      const response = await fetch(`${apiBaseUrl}/api/discussion/next`, {
         method: 'POST',
       });
       
@@ -199,7 +215,7 @@ const App = () => {
 
   const addMessage = async (message, username = 'Human') => {
     try {
-      const response = await fetch('http://localhost:8000/api/discussion/speak', {
+      const response = await fetch(`${apiBaseUrl}/api/discussion/speak`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -222,7 +238,7 @@ const App = () => {
 
   const getDiscussionSummary = async () => {
     try {
-      const response = await fetch('http://localhost:8000/api/discussion/summary');
+      const response = await fetch(`${apiBaseUrl}/api/discussion/summary`);
       const result = await response.json();
       
       if (result.success) {
