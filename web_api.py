@@ -370,5 +370,5 @@ if os.path.exists("web/build"):
 if __name__ == "__main__":
     import uvicorn
     port = int(os.environ.get("PORT", 8000))
-    debug = os.environ.get("DEBUG", "True").lower() == "true"
+    debug = os.environ.get("DEBUG", "False").lower() == "true"
     uvicorn.run("web_api:app", host="0.0.0.0", port=port, reload=debug)
